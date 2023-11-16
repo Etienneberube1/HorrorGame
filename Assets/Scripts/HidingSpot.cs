@@ -7,11 +7,14 @@ public class HidingSpot : MonoBehaviour
 {
     [SerializeField] private GameObject _camera;
     [SerializeField] private GameObject _canvas;
+    [SerializeField] private GameObject _viewPoint;
     [SerializeField] private Slider _slider;
     [SerializeField] private float _airTime;
     [SerializeField] private float _cooldown;
 
     private bool _isHiding = false;
+
+
     private bool _playerInRange = false;
 
     private GameObject _playerGO;
@@ -20,88 +23,90 @@ public class HidingSpot : MonoBehaviour
     {
         _slider.minValue = 0;
         _slider.maxValue = _airTime;
+        _slider.value = _airTime;
     }
 
-    private void OnCollisionEnter(Collision collision)
+    private void OnTriggerEnter(Collider other)
     {
-        if (collision.gameObject.CompareTag("GameController")) { 
+        if (other.gameObject.CompareTag("GameController"))
+        {
             _playerInRange = true;
-            _playerGO = collision.gameObject;
+            _playerGO = other.gameObject;
         }
-    }
 
-    private void OnCollisionExit(Collision collision)
+    }
+    private void OnTriggerExit(Collider other)
     {
-        if (collision.gameObject.CompareTag("GameController"))
+        if (other.gameObject.CompareTag("GameController"))
         {
             _playerInRange = false;
             _playerGO = null;
         }
-    }
 
+    }
 
     private void Update()
     {
         if (!_playerInRange) return;
+        if (!_playerGO) return;
 
 
-        if (!_isHiding) PlayerNotHiding();
-
-
-        if (_isHiding) PlayerIsHiding();
-    }
-
-
-
-
-    private void PlayerNotHiding() {
-        // if the player is not already hiding 
-
-        if (Input.GetKeyDown(KeyCode.E))
-        {
-
-            Debug.Log("player want to hide");
-
-            if (_playerGO)
-            {
-
+        if (Input.GetKeyDown(KeyCode.E)) {
+            if (!_isHiding) {
                 _isHiding = true;
 
-                // making the player transparent
+                _slider.value = _airTime;
+
+
+                _camera.SetActive(true);
+                _canvas.SetActive(true);
+
                 _playerGO.SetActive(false);
 
-                // activating the hiding spot visual 
-                _canvas.SetActive(true);
-                _camera.SetActive(true);
+                _viewPoint.SetActive(false);
+            }
+            else if (_isHiding) {
+                _isHiding = false;
+
+                _camera.SetActive(false);
+                _canvas.SetActive(false);
+
+                _playerGO.SetActive(true);
+
+                _viewPoint.SetActive(true);
+
             }
         }
 
+        if (_isHiding) { PlayerWantToHide(); }
+        if (!_isHiding) { PlayerWantToLeave(); }
     }
 
 
-    private void PlayerIsHiding()
+
+
+    private void PlayerWantToHide()
     {
-        // if the player is already hiding 
-
-        if (Input.GetKeyDown(KeyCode.E))
+        if (_slider.value > _slider.minValue)
         {
-
-            Debug.Log("player want to leave");
-
-            if (_playerGO)
-            {
-
-                _isHiding = false;
-
-                // making the player transparent
-                _playerGO.SetActive(true);
-
-                // activating the hiding spot visual 
-                _canvas.SetActive(false);
-                _camera.SetActive(false);
-            }
+            _slider.value -= Time.deltaTime;
         }
+        
+        
+        if (_slider.value <= _slider.minValue) {
+            PlayerWantToLeave();
+        }
+    }
 
+
+    private void PlayerWantToLeave()
+    {
+        _isHiding = false;
+
+        _camera.SetActive(false);
+        _canvas.SetActive(false);
+
+        _playerGO.SetActive(true);
     }
 
 }
