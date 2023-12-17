@@ -44,6 +44,10 @@ public class ThrowingObject : MonoBehaviour
         }
 
 
+        Toy script = item.GetComponent<Toy>();
+        script.hasBeenLaunched = true;
+
+
         _toysList.RemoveAt(0);
         StartCoroutine(waitForCollider(item));
 

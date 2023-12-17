@@ -15,6 +15,8 @@ public class HidingSpot : MonoBehaviour
     [SerializeField] private float _airTime;
     [SerializeField] private float _cooldown;
 
+    [SerializeField] private EnemyAI enemyAI;
+
     private float _currentAirTime = 0;
 
     private bool _isHiding = false;
@@ -45,6 +47,7 @@ public class HidingSpot : MonoBehaviour
         {
             _playerInRange = true;
             _playerGO = other.gameObject;
+            enemyAI.SetPlayerHiding(true);
         }
 
     }
@@ -54,6 +57,7 @@ public class HidingSpot : MonoBehaviour
         {
             _playerInRange = false;
             _playerGO = null;
+            enemyAI.SetPlayerHiding(false);
         }
 
     }
@@ -109,6 +113,11 @@ public class HidingSpot : MonoBehaviour
             _slider.value = _currentAirTime;
         }
 
+        EnemyAI enemyAI = FindObjectOfType<EnemyAI>();
+        if (enemyAI != null)
+        {
+            enemyAI.SetPlayerHiding(true);
+        }
 
         if (_slider.value <= _slider.minValue)
         {
@@ -120,6 +129,12 @@ public class HidingSpot : MonoBehaviour
     private void PlayerWantToLeave()
     {
         _isHiding = false;
+
+        EnemyAI enemyAI = FindObjectOfType<EnemyAI>();
+        if (enemyAI != null)
+        {
+            enemyAI.SetPlayerHiding(false);
+        }
 
         _camera.SetActive(false);
         _canvas.SetActive(false);
