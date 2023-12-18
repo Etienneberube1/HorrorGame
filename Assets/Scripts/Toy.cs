@@ -11,6 +11,7 @@ public class Toy : MonoBehaviour
         {
             enemyAI.InvestigatePoint(transform.position);
             Destroy(gameObject, 1f);
+            AudioManager.Instance.PlaySFX(AudioManager.EAudio.DuckSound);
         }
     }
 }

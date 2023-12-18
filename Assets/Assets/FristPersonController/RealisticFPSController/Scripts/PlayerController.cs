@@ -77,8 +77,26 @@ namespace EvolveGames
             WalkingValue = walkingSpeed;
         }
 
+        float _time = 0.4f;
+        float _elapsed = 0;
+
+        private void SoundEffect()
+        {
+            if (Moving)
+            {
+                _elapsed += Time.deltaTime;
+                if (_elapsed > _time)
+                {
+                    AudioManager.Instance.PlaySFX(AudioManager.EAudio.PlayerStepSound);
+                    _elapsed = 0;
+                }
+            }
+        }
+
         void Update()
         {
+            SoundEffect();
+
             RaycastHit CroughCheck;
             RaycastHit ObjectCheck;
 
